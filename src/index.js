@@ -67,16 +67,7 @@ app.get("/statement", verifyIfExistsAccountCPF, (request, response)=>{
     
     return response.json(customer.statement)
 })
-// Para puxar o extrato por data: 
-app.get("/statement/date", verifyIfExistsAccountCPF, (request, response)=>{
-    const {customer} = request; 
-    const {date} = request.query
-    const dateFormat = new Date (date + " 00:00")
 
-    const statement = customer.statement.filter((statement) => statement.created_at.toDateString() === new Date(dateFormat).toDateString())
-    
-    return response.json(customer.statement)
-})
 // Para fazer um depósito: 
 app.post('/deposit', verifyIfExistsAccountCPF, (request, response) => {
     const {description, amount} = request.body; 
@@ -91,9 +82,6 @@ app.post('/deposit', verifyIfExistsAccountCPF, (request, response) => {
     customer.statement.push(statementOperation)
 
     return response.status(201).send(); 
-
-
-
 })
 
 // Para fazer um saque: 
@@ -117,6 +105,17 @@ app.post('/withdraw', verifyIfExistsAccountCPF, (request, response) =>{
     return response.status(201).send()
 })
 
+// Para puxar o extrato por data: 
+app.get("/statement/date", verifyIfExistsAccountCPF, (request, response)=>{
+    const {customer} = request; 
+    const {date} = request.query
+    const dateFormat = new Date (date + " 00:00")
+
+    const statement = customer.statement.filter((statement) => statement.created_at.toDateString() === new Date(dateFormat).toDateString())
+    
+    return response.json(statement)
+})
+
 // Para Atualizar os dados do cliente: 
 app.put('/account', verifyIfExistsAccountCPF, (request, response) => {
     const { name } = request.body; 
@@ -134,11 +133,18 @@ app.get("/account", verifyIfExistsAccountCPF, (request, response) =>{
 })
 
 // Para deletar a conta: 
-app.delete("account", verifyIfExistsAccountCPF, (request, response) =>{
+app.delete("/account", verifyIfExistsAccountCPF, (request, response) =>{
     const {customer} = request
 
     customers.splice(customer, 1)
 
     return response.status(200).json(customers)
+})
+
+// Para ver o saldo da conta: 
+app.get("/balance", verifyIfExistsAccountCPF, (request, response) => {
+    const {customer} = request; 
+    const balance = GetBalance(customer.statement) 
+    return response.json(balance)
 })
 app.listen(3333)

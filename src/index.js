@@ -117,4 +117,28 @@ app.post('/withdraw', verifyIfExistsAccountCPF, (request, response) =>{
     return response.status(201).send()
 })
 
+// Para Atualizar os dados do cliente: 
+app.put('/account', verifyIfExistsAccountCPF, (request, response) => {
+    const { name } = request.body; 
+    const {customer} = request; 
+
+    customer.name = name
+
+    return response.status(201).send()
+})
+
+// Para buscar os dados da conta cliente: 
+app.get("/account", verifyIfExistsAccountCPF, (request, response) =>{
+    const {customer} = request
+    return response.json(customer) 
+})
+
+// Para deletar a conta: 
+app.delete("account", verifyIfExistsAccountCPF, (request, response) =>{
+    const {customer} = request
+
+    customers.splice(customer, 1)
+
+    return response.status(200).json(customers)
+})
 app.listen(3333)
